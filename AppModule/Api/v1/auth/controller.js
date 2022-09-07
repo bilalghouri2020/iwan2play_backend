@@ -1,4 +1,4 @@
-const { ErrorHandler } = require("../../helpers/errorHandler");
+// const { ErrorHandler } = require("../../helpers/errorHandler");
 const jwt = require("jsonwebtoken");
 const { existingUserByEmail, passwordEncryption, createUser } = require("../../helpers/userHelper");
 
