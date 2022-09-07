@@ -5,8 +5,8 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+// var indexRouter = require('./routes/index');
+// var usersRouter = require('./routes/users');
 const openRoutes = require("./AppModule/baseRoutes/routers.open");
 
 
@@ -49,8 +49,16 @@ app.get('/checkrouter', (req, res) => {
     message: 'ok connection'
   })
 })
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+
+app.get('/', (req, res) => {
+  res.json({
+    message: 'connection ok'
+  })
+})
+// app.use('/' () => {
+  
+// });
+// app.use('/users', usersRouter);
 
 
 
