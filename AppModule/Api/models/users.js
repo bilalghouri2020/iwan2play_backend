@@ -24,6 +24,10 @@ const userSchema = new mongoose.Schema({
   isFacebook: {
     type: Boolean,
     required: true
+  },
+  haveAChild: {
+    type: Boolean,
+    required: true
   }
   // userRole: {
   //   type: String,

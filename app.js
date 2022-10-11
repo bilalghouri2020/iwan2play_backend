@@ -8,6 +8,15 @@ const dotenv = require("dotenv");
 // var indexRouter = require('./routes/index');
 // var usersRouter = require('./routes/users');
 const openRoutes = require("./AppModule/baseRoutes/routers.open");
+const closeRouteController = require("./AppModule/baseRoutes/controller");
+const closeRoutes = require("./AppModule/baseRoutes/routes.close");
+const multer = require('multer')
+const upload = multer()
+
+const {
+  verifyUser
+} = closeRouteController;
+
 
 
 var app = express();
@@ -34,21 +43,25 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(upload.any())
 
 
 
+// app.get('/checkrouter', (req, res) => {
+//   console.log("connection successful");
+//   res.json({
+//     message: 'ok connection'
+//   })
+// })
 
 app.use(openRoutes);
+app.use(
+  verifyUser,
+  closeRoutes
+);
 
 
 
-
-app.get('/checkrouter', (req, res) => {
-  console.log("connection successful");
-  res.json({
-    message: 'ok connection'
-  })
-})
 
 app.get('/', (req, res) => {
   res.json({
@@ -56,7 +69,7 @@ app.get('/', (req, res) => {
   })
 })
 // app.use('/' () => {
-  
+
 // });
 // app.use('/users', usersRouter);
 
@@ -68,12 +81,12 @@ app.get('/', (req, res) => {
 
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

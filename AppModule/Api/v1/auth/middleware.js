@@ -51,7 +51,7 @@ exports.validateEmail = (req, res, next) => {
         const { error } = schema.validate(req.body);
         if (error) {
             console.log('error....', error);
-            req.json({ error })
+            res.json({ error: error.details[0].message })
             return
         }
         // if (error) throw new ErrorHandler(400, error.details[0].message);
@@ -77,8 +77,8 @@ exports.validateSignUp = (req, res, next) => {
             isFacebook: Joi.boolean().required(),
         });
         const { error } = schema.validate(req.body);
-        // if (error) throw new ErrorHandler(400, error.details[0].message);
         if (error) {
+            console.log(error);
             res.json({
                 error: error?.details[0]?.message
             })
@@ -88,6 +88,7 @@ exports.validateSignUp = (req, res, next) => {
         // res.json({message: 'ok'})
         next()
     } catch (error) {
+        console.log('catch..');
         next(error);
     }
 }
