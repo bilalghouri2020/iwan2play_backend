@@ -1,6 +1,6 @@
 // const ERROR = require("../api/helpers/errorHandler");
-const authHelper = require("../api/helpers/authHelper");
-const { ErrorHandler } = require("../api/helpers/errorHandler");
+const authHelper = require("../Api/helpers/authHelper");
+// const { ErrorHandler } = require("../api/helpers/errorHandler");
 const { existingUserByEmail } = require("../Api/helpers/userHelper");
 const {
   jwtVerify,
