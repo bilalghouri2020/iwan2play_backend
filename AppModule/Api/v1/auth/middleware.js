@@ -32,7 +32,6 @@ exports.validateToken = async (req, res, next) => {
             user: req.user,
             authorized: true
         })
-        
     } catch (error) {
         next(error);
     }

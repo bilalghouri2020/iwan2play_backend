@@ -122,7 +122,7 @@ const AuthController = {
       await createUser(userObject);
       delete userObject?.password;
       console.log("created user...", userObject);
-      return res.status(201).json({
+      return res.json({
         status: 201,
         data: userObject,
         error: null,

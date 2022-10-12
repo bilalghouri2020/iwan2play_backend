@@ -11,7 +11,7 @@ const closeRoutesController = {
 
   verifyUser: async (req, res, next) => {
     // console.log(req.files);
-    console.log(req.body);
+    console.log("verify...", req.body);
     // return 
     try {
       const { authenticationType } = req.body

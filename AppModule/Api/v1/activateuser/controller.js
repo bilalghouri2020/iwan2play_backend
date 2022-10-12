@@ -95,9 +95,12 @@ const activationController = {
           const updateChildState = await updateLoginStatus(updatedData.userId)
           console.log('update child Status...', updateChildState);
         }
-        return res.status(201).json({ data: updatedData })
+
+        console.log('ok hai ');
+        return res.json({ status: 201, data: updatedData, updateChildState:updateChildState })
 
       } catch (error) {
+        console.log("addKidInfo...", error);
         return res.json({ error })
       }
     } catch (error) {

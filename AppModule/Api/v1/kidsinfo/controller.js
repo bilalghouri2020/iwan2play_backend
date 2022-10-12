@@ -41,18 +41,21 @@ const KidsInfoController = {
       };
       try {
         const updatedData = await createKidInfoDetails(obj)
-        if(updatedData._id){
-          const updateChildState = await updateLoginStatus(updatedData.userId)
+        let updateChildState
+        if (updatedData._id) {
+          updateChildState = await updateLoginStatus(updatedData.userId)
           console.log('update child Status...', updateChildState);
         }
-        return res.status(201).json({ data: updatedData })
+        console.log('ok jhai ');
+        return res.json({ status: 201, data: updatedData, updateChildState })
 
       } catch (error) {
+        console.log('addKidInfo...', error);
         return res.json({ error })
       }
     } catch (error) {
       console.log("end error ...", error);
-      return res.json({error})
+      return res.json({ error })
     }
   },
   addProduct: async (req, res, next) => {

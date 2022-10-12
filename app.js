@@ -56,6 +56,7 @@ app.use(upload.any())
 
 app.use(openRoutes);
 app.use(
+  // upload.any(),
   verifyUser,
   closeRoutes
 );
