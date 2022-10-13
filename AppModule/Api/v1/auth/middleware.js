@@ -1,39 +1,51 @@
 const Joi = require("joi");
 // const { ErrorHandler } = require("../../helpers/errorHandler");
 const authHelper = require("../../helpers/authHelper");
+const { existingUserByEmail } = require("../../helpers/userHelper");
 
 const {
     jwtVerify,
 } = authHelper;
 
 exports.validateToken = async (req, res, next) => {
-    console.log(req.body);
     try {
         const authHeader = req.headers["authorization"];
-        console.log(authHeader)
+        console.log(req.body);
         const token = authHeader && authHeader.split(" ")[1];
         // const token = authHeader;
-
-
         if (!token) {
-            res.json({
+            return res.json({
                 error: 'Unauthorized To Access'
             })
-            return
-            // throw new ErrorHandler(401, 'Unauthorized To Access')
-
         }
 
         const decodedData = await jwtVerify(token);
+        if (decodedData.error) return res.json({ error: 'invalid JWT token' })
         console.log(decodedData);
-
-        req.user = decodedData;
+        const user = await existingUserByEmail(decodedData.email);
+        if (!user) {
+            return res.json({
+                error: 'tokan valid but user does\'t exist.'
+            })
+        }
+        if (decodedData?.googleId) {
+            if (user.GoogleId !== decodedData?.googleId) {
+                return res.json({
+                    error: 'tokan is valid but google account does\'t exist or google ID does\'t match.'
+                })
+            }
+        }
+        delete user.password
         res.json({
-            user: req.user,
+            user,
             authorized: true
         })
+
     } catch (error) {
-        next(error);
+        console.log("catch error from token verify middleware...", error);
+        return res.json({
+            error: 'catch error from token verify middleware...'
+        })
     }
     // res.json({
     //     messagE: 'token ok'
@@ -64,7 +76,7 @@ exports.validateEmail = (req, res, next) => {
 }
 exports.validateSignUp = (req, res, next) => {
     req.body.email = req.body.email.toLowerCase().trim()
-    
+
     try {
         const schema = Joi.object({
             fullName: Joi.string().required().min(3).max(50),
@@ -77,14 +89,13 @@ exports.validateSignUp = (req, res, next) => {
         });
         const { error } = schema.validate(req.body);
         if (error) {
-            console.log(error);
+            console.log("Joi schema error...", error);
             res.json({
                 error: error?.details[0]?.message
             })
-            return 
+            return
         }
-        console.log('req.body..................', req.body);
-        // res.json({message: 'ok'})
+        console.log('sign up validation has been approved...');
         next()
     } catch (error) {
         console.log('catch..');
@@ -95,13 +106,12 @@ exports.validateSignUp = (req, res, next) => {
 exports.validateLogin = (req, res, next) => {
 
     req.body.email = req.body.email.toLowerCase().trim()
-    console.log(req.body.email);
-
     try {
         const schema = Joi.object({
             email: Joi.string().required().email(),
             password: Joi.string().min(6).max(30),
             isGoogle: Joi.boolean().required(),
+            googleId: Joi.string(),
             isFacebook: Joi.boolean().required()
         });
         const { error } = schema.validate(req.body);
@@ -110,7 +120,7 @@ exports.validateLogin = (req, res, next) => {
             res.json({
                 error: error?.details[0]?.message
             })
-            return 
+            return
         }
         next()
     } catch (error) {

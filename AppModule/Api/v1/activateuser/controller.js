@@ -11,9 +11,9 @@ const activationController = {
 
 
   getAllUser: async (req, res, next) => {
-    
+    console.log("req.params...", req.query.lat);
     try {
-      let record = await getAllUserFromLocation(req.body.coord[0], req.body.coord[1])
+      let record = await getAllUserFromLocation(req.query.lat, req.query.lng)
       console.log("record...", record);
       return res.json({
         status: 200,
@@ -26,6 +26,15 @@ const activationController = {
       })
     }
   },
+
+
+
+
+
+
+
+
+
   activate: async (req, res, next) => {
     try {
       const { userId, userData: { lat, lng } } = req.body
@@ -43,6 +52,15 @@ const activationController = {
       })
     }
   },
+
+
+
+
+
+
+
+
+
   unActivate: async (req, res) => {
     const { userId } = req.body
     try {
@@ -60,6 +78,7 @@ const activationController = {
       })
     }
   }, 
+
   addKidInfo: async (req, res, next) => {
     console.log('req.body from controller...', req.body);
     const {

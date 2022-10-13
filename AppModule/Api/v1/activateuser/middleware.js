@@ -8,37 +8,37 @@ const { Worker } = require('worker_threads')
 const cloudinary = require('cloudinary')
 dotenv.config()
 cloudinary.v2.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 })
 
 
 exports.validateForActivation = (req, res, next) => {
   const {userData} = req.body
+  console.log("req.query...", req.body);
   try {
     const schema = Joi.object({
       lat: Joi.string().required(),
       lng: Joi.string().required(),
     });
     const userDataResult = schema.validate(userData);
-    const {error} = userDataResult
-    console.log("cloudinary Result...", userDataResult);
+    const { error } = userDataResult
     if (error) throw { errorCode: 400, error: error.details[0].message }
     console.log("ok hai ");
     next()
-    return 
+    return
   } catch (error) {
     console.log('error from joi validation middleware...', error);
     res.json({
       ...error
     })
-    return 
+    return
   }
 }
 
 exports.validateKidsInfo = (req, res, next) => {
-  const {kidInfoData} = req.body
+  const { kidInfoData } = req.body
   // console.log(req.body);
   // return
   try {
@@ -56,12 +56,12 @@ exports.validateKidsInfo = (req, res, next) => {
     });
 
     const cloudinaryResult = schema.validate(kidInfoData);
-    const {error} = cloudinaryResult
+    const { error } = cloudinaryResult
     console.log("cloudinary Result...", cloudinaryResult);
     if (error) throw { errorCode: 400, error: error.details[0].message }
     console.log("ok hai ");
     next()
-    return 
+    return
   } catch (error) {
     // next(error);
     console.log('error from joi validation middleware...', error);
@@ -82,7 +82,7 @@ exports.uploadingImage = async (req, res, next) => {
   let uploadStr = `data:image/jpeg;base64,${dataURI}`
   const { kidInfoData: { childName } } = req.body
   console.log(childName);
-  
+
   cloudinary.v2.uploader.upload(uploadStr, {
     overwrite: true,
     public_id: `${childName}-${uuidv4()}`,
@@ -107,9 +107,9 @@ exports.uploadingImage = async (req, res, next) => {
       message: 'getting problem in upload image on cloudinary...',
       result
     })
-    return 
+    return
   })
-  return 
+  return
 }
 
 exports.validateAddProduct = (req, res, next) => {

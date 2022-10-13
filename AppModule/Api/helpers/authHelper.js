@@ -4,9 +4,15 @@ const jwt = require("jsonwebtoken");
 
 
 exports.jwtVerify = async (token) => {
-  const userData = await jwt.verify(
-    token,
-    process.env.SECRET_KEY
-  );
-  return userData;
+  try {
+    const userData = await jwt.verify(
+      token,
+      process.env.SECRET_KEY
+    );
+    return userData;
+  } catch (error) {
+    return {
+      error
+    }
+  }
 }

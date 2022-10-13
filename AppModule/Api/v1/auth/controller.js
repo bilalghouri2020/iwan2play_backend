@@ -78,18 +78,30 @@ const AuthController = {
   signup: async (req, res, next) => {
     try {
       const user = await existingUserByEmail(req.body.email);
-      console.log("user...", user);
       if (user) {
         if (user.isGoogle || user.isFacebook) {
-          if (user.GoogleId === req.body.GoogleId && !user.isFacebook) return res.json({
-            status: 302,
-            loginState: 2,
+          console.log('user...........', user);
+          console.log('user...........', req.body);
 
-            message: `This email is already exists as a ${user.isGoogle ? 'Google User' : 'Facebook User.'}`
-          })
+          if (user.GoogleId === req.body.GoogleId && !user.isFacebook) {
+            let payload = {
+              _id: user._id,
+              email: user.email,
+              googleId: user.GoogleId
+            }
+            const jwtToken = jwt.sign(payload, process.env.SECRET_KEY);
+
+            return res.json({
+              status: 302,
+              loginState: 2,
+              message: `This email is already exists as a ${user.isGoogle ? 'Google User' : 'Facebook User.'}`,
+              data: user,
+              token: jwtToken
+            })
+          }
         } else {
           return res.json({
-            status:302,
+            status: 302,
             loginState: 3,
             message: 'This email already exists.'
           })
@@ -119,12 +131,30 @@ const AuthController = {
           haveAChild: false
         };
       }
-      await createUser(userObject);
+      let userResult = await createUser(userObject);
+
+      let payload;
+      if (!userResult.isFacebook && !userResult.isGoogle) {
+        payload = {
+          _id: userResult._id,
+          email: userResult.email,
+          // userRole: user.userRole
+        };
+      }
+      if (userResult.isGoogle) {
+        payload = {
+          _id: userResult._id,
+          email: userResult.email,
+          googleId: userResult.GoogleId
+        }
+      }
+      const jwtToken = jwt.sign(payload, process.env.SECRET_KEY);
       delete userObject?.password;
       console.log("created user...", userObject);
       return res.json({
         status: 201,
         data: userObject,
+        token: jwtToken,
         error: null,
       });
     } catch (error) {
@@ -134,9 +164,11 @@ const AuthController = {
 
   login: async (req, res, next) => {
     try {
-      const { email, password } = req.body;
+      const { email, password, googleId } = req.body;
+
       const user = await existingUserByEmail(email.toLowerCase());
       console.log("user exits.......", user);
+      console.log("googleId.......", googleId);
 
       if (!user) {
         res.json({
@@ -147,25 +179,45 @@ const AuthController = {
       // if (user.isDeactive == true) {
       //   throw new ErrorHandler(402, "This account is deactivated.");
       // }
-      const hashedPassword = passwordEncryption(password);
-      if (user.password !== hashedPassword) {
-        res.json({
-          error: 'Email or password incorrect.'
-        })
-        return
-        // throw new ErrorHandler(401, "Email or password incorrect.");
+
+      let payload;
+      if (!user.isFacebook && !user.isGoogle) {
+        const hashedPassword = passwordEncryption(password);
+        if (user.password !== hashedPassword) {
+          res.json({
+            error: 'Email or password incorrect.'
+          })
+          return
+          // throw new ErrorHandler(401, "Email or password incorrect.");
+        }
+        payload = {
+          _id: user._id,
+          email: user.email,
+          // userRole: user.userRole
+        };
+      }
+      if (user.isGoogle) {
+
+        if (googleId !== user.GoogleId) {
+          return res.json({
+            error: 'email or google id is incorrect'
+          })
+        }
+        payload = {
+          _id: user._id,
+          email: user.email,
+          googleId: user.GoogleId
+        }
+
       }
 
-      const payload = {
-        _id: user._id,
-        email: user.email,
-        // userRole: user.userRole
-      };
       const jwtToken = jwt.sign(payload, process.env.SECRET_KEY);
       console.log("you are successfully login.");
       res.json({
         data: { "token": jwtToken },
+        user,
       });
+
     } catch (error) {
       next(error)
     }

@@ -4,8 +4,8 @@ const controller = require("./controller");
 // const { upload } = require("../../helpers/media");
 
 router.post('/activate', middleware.validateForActivation, controller.activate)
-router.post('/un-activate', controller.unActivate)
-router.post('/get-alluser', controller.getAllUser)
+router.get('/un-activate', controller.unActivate)
+router.get('/get-alluser', controller.getAllUser)
 
 // router.post('/', middleware.validateAddProduct, controller.addProduct);
 // router.post('/createProduct',upload.any(), controller.createProductBeta);

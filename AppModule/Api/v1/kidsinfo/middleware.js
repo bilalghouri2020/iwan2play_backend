@@ -29,12 +29,9 @@ exports.validateKidsInfo = (req, res, next) => {
       myFavoriteActivities: Joi.array().items(Joi.string()).required(),
       uploadedImageResult: Joi.object().required()
     });
-
     const cloudinaryResult = schema.validate(kidInfoData);
     const {error} = cloudinaryResult
-    console.log("cloudinary Result...", cloudinaryResult);
     if (error) throw { errorCode: 400, error: error.details[0].message }
-    console.log("ok hai ");
     next()
     return 
   } catch (error) {
@@ -52,7 +49,6 @@ exports.uploadingImage = async (req, res, next) => {
   // console.log(req.files);
   let dataURI = req.files[0].buffer.toString('base64')
   // console.log(dataURI);
-
   // return 
   let uploadStr = `data:image/jpeg;base64,${dataURI}`
   const { kidInfoData: { childName } } = req.body
