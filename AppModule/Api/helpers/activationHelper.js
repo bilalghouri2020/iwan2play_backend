@@ -1,6 +1,7 @@
 const { KidInfoModel } = require("../models/kidInfo");
 const multer = require("multer");
 const { ActivatedUser } = require("../models/activateuser");
+const { UserModel } = require("../models/users");
 
 
 exports.getAllUserFromLocation = async (lat, lng) => {
@@ -29,7 +30,27 @@ exports.getAllUserFromLocation = async (lat, lng) => {
     ])
 
     // const users = await ActivatedUser.geoNear({ type: 'Point', coordinates: [parseFloat(lng), parseFloat(lat)] }, { maxDistance: 100000, spherical: true })
-    console.log("get.....", users)
+    
+    return users
+    // let kidInfoData = await KidInfoModel.find({userId: users[0].userId})
+    // console.log("infoData...", ki/dInfoData);
+  } catch (error) {
+    console.log("getting all user from geo location...", error);
+    return null;
+  }
+}
+exports.getAllUserFromLocationWithoutCoordinates = async () => {
+  try {
+    const users = await UserModel.aggregate([{
+      $lookup: {
+        from: 'kidsinfos',
+        localField: '_id',
+        foreignField: 'userId',
+        as: 'kidsInformation'
+      }
+    }])
+    // const users = await ActivatedUser.geoNear({ type: 'Point', coordinates: [parseFloat(lng), parseFloat(lat)] }, { maxDistance: 100000, spherical: true })
+    
     return users
     // let kidInfoData = await KidInfoModel.find({userId: users[0].userId})
     // console.log("infoData...", ki/dInfoData);

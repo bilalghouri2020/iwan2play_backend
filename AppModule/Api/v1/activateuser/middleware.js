@@ -16,7 +16,6 @@ cloudinary.v2.config({
 
 exports.validateForActivation = (req, res, next) => {
   const {userData} = req.body
-  console.log("req.query...", req.body);
   try {
     const schema = Joi.object({
       lat: Joi.string().required(),
@@ -25,7 +24,6 @@ exports.validateForActivation = (req, res, next) => {
     const userDataResult = schema.validate(userData);
     const { error } = userDataResult
     if (error) throw { errorCode: 400, error: error.details[0].message }
-    console.log("ok hai ");
     next()
     return
   } catch (error) {
@@ -92,7 +90,6 @@ exports.uploadingImage = async (req, res, next) => {
     crop: "fill"
   }, (error, result) => {
     if (error) return res.json({ error: 'cloudinary error' + error })
-    console.log("result.....", result);
     if (result.type === 'upload') {
       console.log('checked');
       req.body.kidInfoData.uploadedImageResult = result

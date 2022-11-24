@@ -10,6 +10,17 @@ exports.createUser = async (object) => {
     return null;
   }
 }
+exports.updatePassword = async (id, password) => {
+  try {
+    const user = await UserModel.findByIdAndUpdate(id._id, {
+      password: password
+    })
+    return user;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}
 
 exports.existingUserByEmail = async (email) => {
   try {
@@ -31,9 +42,7 @@ exports.getUserById = async (id) => {
 
 exports.updateLoginStatus = async (id) => {
   try {
-    console.log("id...", id);
     const user = await UserModel.findOneAndUpdate({_id: id}, { haveAChild: true });
-    console.log("update login status...", user);
     
     return user;
   } catch (error) {

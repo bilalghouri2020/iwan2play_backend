@@ -6,6 +6,7 @@ const controller = require("./controller");
 router.post('/activate', middleware.validateForActivation, controller.activate)
 router.get('/un-activate', controller.unActivate)
 router.get('/get-alluser', controller.getAllUser)
+router.get('/get-alluser-withoutcoordinates', controller.getAllUserWithoutCoordinates)
 
 // router.post('/', middleware.validateAddProduct, controller.addProduct);
 // router.post('/createProduct',upload.any(), controller.createProductBeta);

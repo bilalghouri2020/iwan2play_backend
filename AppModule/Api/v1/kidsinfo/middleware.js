@@ -66,7 +66,6 @@ exports.uploadingImage = async (req, res, next) => {
   }, (error, result) => {
     console.log("cloudinary error...", error);
     if (error) return res.json({ error: 'cloudinary error' + error })
-    console.log("result.....", result);
     if (result.type === 'upload') {
       // console.log('checked');
       req.body.kidInfoData.uploadedImageResult = result

@@ -9,7 +9,7 @@ const { CreateProductValidator, UpdateProductValidator, UpdateProductImage } = r
 const KidsInfoController = {
 
   addKidInfo: async (req, res, next) => {
-    console.log('req.body from controller...', req.body);
+    
     const {
       userId,
       kidInfoData: {
@@ -44,7 +44,7 @@ const KidsInfoController = {
         let updateChildState
         if (updatedData._id) {
           updateChildState = await updateLoginStatus(updatedData.userId)
-          console.log('update child Status...', updateChildState);
+          
         }
         console.log('ok jhai ');
         return res.json({ status: 201, data: updatedData, updateChildState })

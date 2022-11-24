@@ -20,6 +20,30 @@ const {
 
 
 var app = express();
+const server = require('http').createServer(app)
+const { Server } = require('socket.io')
+const io = new Server(server)
+
+module.exports = { io }
+
+require('./AppModule/Api/helpers/sockets')
+
+
+// io.on('connection', (socket) => {
+//   console.log('a user connected...',socket.rooms.entries());
+//   socket.on('disconnect', () => {
+//     console.log('disconnect user...');
+//   })
+//   socket.on('ready_for_chat', (data) => {
+//     io.emit('ready_for_chat_recieve', 'hello world')
+//   })
+//   io.on('disconnect', () => {
+//     console.log('disconnect user...');
+//   })
+//   // socket.emit('enteredvalue', 'adsfjhakdlsf')
+// })
+
+// io.on
 
 // view engine setup
 // app.set('views', path.join(__dirname, 'views'));
@@ -33,6 +57,7 @@ mongoose.connect(process.env.DB_DEV, {
 
 // mongoose.set("useFindAndModify", false);
 mongoose.connection.on("connected", () => {
+
   console.log("Connected To Data Base ...");
 });
 
@@ -97,4 +122,10 @@ app.use(function (err, req, res, next) {
   res.render('error');
 });
 
-module.exports = app;
+
+const PORT = process.env.PORT || 3000
+
+server.listen(PORT, () => {
+  console.log('server is running on port ...', PORT);
+})
+

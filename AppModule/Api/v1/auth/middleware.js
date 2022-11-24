@@ -10,7 +10,6 @@ const {
 exports.validateToken = async (req, res, next) => {
     try {
         const authHeader = req.headers["authorization"];
-        console.log(req.body);
         const token = authHeader && authHeader.split(" ")[1];
         // const token = authHeader;
         if (!token) {
@@ -21,7 +20,7 @@ exports.validateToken = async (req, res, next) => {
 
         const decodedData = await jwtVerify(token);
         if (decodedData.error) return res.json({ error: 'invalid JWT token' })
-        console.log(decodedData);
+
         const user = await existingUserByEmail(decodedData.email);
         if (!user) {
             return res.json({
@@ -124,6 +123,79 @@ exports.validateLogin = (req, res, next) => {
         }
         next()
     } catch (error) {
+        next(error);
+    }
+}
+
+
+
+exports.forgotPassword = (req, res, next) => {
+    req.body.email = req.body.email.toLowerCase().trim()
+    try {
+        const schema = Joi.object({
+            email: Joi.string().required().email(),
+        });
+        
+        const { error } = schema.validate(req.body);
+        if (error) {
+            // throw new ErrorHandler(400, error.details[0].message);
+            res.json({
+                error: error?.details[0]?.message
+            })
+            return
+        }
+        console.log('check');
+        next()
+    } catch (error) {
+        console.log('error from forgot password', error);
+        next(error);
+    }
+}
+exports.verifyCode = (req, res, next) => {
+    
+    try {
+        const schema = Joi.object({
+            email: Joi.string().required().email(),
+            code: Joi.number().required(),
+        });
+        
+        const { error } = schema.validate(req.body);
+        if (error) {
+            // throw new ErrorHandler(400, error.details[0].message);
+            res.json({
+                error: error?.details[0]?.message
+            })
+            return
+        }
+        console.log('check');
+        next()
+    } catch (error) {
+        console.log('error from forgot password', error);
+        next(error);
+    }
+}
+exports.newPassword = (req, res, next) => {
+
+    // req.body.email = req.body.email.toLowerCase().trim()
+    
+    try {
+        const schema = Joi.object({
+            code: Joi.number().required(),
+            password: Joi.string().required(),
+        });
+
+
+        const { error } = schema.validate(req.body);
+        if (error) {
+            // throw new ErrorHandler(400, error.details[0].message);
+            res.json({
+                error: error?.details[0]?.message
+            })
+            return
+        }
+        next()
+    } catch (error) {
+        console.log('error from forgot password', error);
         next(error);
     }
 }

@@ -1,5 +1,5 @@
 const { isValidObjectId } = require("mongoose");
-const { createActivationRecord, isExistAndUpdateActivatedUser, getAllUserFromLocation } = require("../../helpers/activationHelper");
+const { createActivationRecord, isExistAndUpdateActivatedUser, getAllUserFromLocation, getAllUserFromLocationWithoutCoordinates } = require("../../helpers/activationHelper");
 const { createKidInfoDetails } = require("../../helpers/kidsInfoHelper");
 const { updateLoginStatus } = require("../../helpers/userHelper");
 // const { createProduct, updateProductObj, getProductById, toSlug, getAllProducts } = require("../../helpers/productHelper");
@@ -14,7 +14,22 @@ const activationController = {
     console.log("req.params...", req.query.lat);
     try {
       let record = await getAllUserFromLocation(req.query.lat, req.query.lng)
-      console.log("record...", record);
+      
+      return res.json({
+        status: 200,
+        data: record
+      })
+    } catch (error) {
+      console.log(error);
+      return res.json({
+        error
+      })
+    }
+  },
+  getAllUserWithoutCoordinates: async (req, res, next) => {
+    try {
+      let record = await getAllUserFromLocationWithoutCoordinates()
+      
       return res.json({
         status: 200,
         data: record
@@ -39,7 +54,6 @@ const activationController = {
     try {
       const { userId, userData: { lat, lng } } = req.body
       let record = await isExistAndUpdateActivatedUser(userId, true, lat, lng)
-      console.log('activate user...', record);
       return res.json({
         status: 201,
         data: record,
@@ -65,7 +79,6 @@ const activationController = {
     const { userId } = req.body
     try {
       let record = await isExistAndUpdateActivatedUser(userId, false)
-      console.log('activate user...', record);
       return res.json({
         status: 201,
         data: record,
@@ -80,7 +93,7 @@ const activationController = {
   }, 
 
   addKidInfo: async (req, res, next) => {
-    console.log('req.body from controller...', req.body);
+    
     const {
       childName,
       childDOB,
@@ -112,7 +125,6 @@ const activationController = {
         const updatedData = await createKidInfoDetails(obj)
         if (updatedData._id) {
           const updateChildState = await updateLoginStatus(updatedData.userId)
-          console.log('update child Status...', updateChildState);
         }
 
         console.log('ok hai ');
