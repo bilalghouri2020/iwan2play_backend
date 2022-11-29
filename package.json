@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node app",
-    "dev": "nodemon aoo"
+    "dev": "nodemon app"
   },
   "dependencies": {
     "axios": "^0.27.2",

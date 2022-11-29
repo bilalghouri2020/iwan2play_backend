@@ -11,10 +11,12 @@ const activationController = {
 
 
   getAllUser: async (req, res, next) => {
-    console.log("req.params...", req.query.lat);
+    console.log("req.params...", req.body.userId.toString());
     try {
       let record = await getAllUserFromLocation(req.query.lat, req.query.lng)
-      
+      record = record.filter(item => item.userId.toString() !== req.body.userId.toString())
+      // console.log("get all record...", record);
+      // return 
       return res.json({
         status: 200,
         data: record
@@ -27,9 +29,12 @@ const activationController = {
     }
   },
   getAllUserWithoutCoordinates: async (req, res, next) => {
+    // console.log(req.body);
     try {
       let record = await getAllUserFromLocationWithoutCoordinates()
-      
+      // console.log("get all user without coordinates...", record[0]._id.toString());
+      record = record.filter(item => item._id.toString() !== req.body.userId.toString())
+      // console.log(record.length);
       return res.json({
         status: 200,
         data: record

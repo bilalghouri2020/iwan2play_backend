@@ -28,6 +28,10 @@ const userSchema = new mongoose.Schema({
   haveAChild: {
     type: Boolean,
     required: true
+  },
+  verification: {
+    type: Boolean,
+    required: true
   }
   // userRole: {
   //   type: String,

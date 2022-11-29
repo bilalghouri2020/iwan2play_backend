@@ -75,7 +75,6 @@ exports.validateEmail = (req, res, next) => {
 }
 exports.validateSignUp = (req, res, next) => {
     req.body.email = req.body.email.toLowerCase().trim()
-
     try {
         const schema = Joi.object({
             fullName: Joi.string().required().min(3).max(50),
@@ -156,6 +155,29 @@ exports.verifyCode = (req, res, next) => {
     try {
         const schema = Joi.object({
             email: Joi.string().required().email(),
+            code: Joi.number().required(),
+        });
+        
+        const { error } = schema.validate(req.body);
+        if (error) {
+            // throw new ErrorHandler(400, error.details[0].message);
+            res.json({
+                error: error?.details[0]?.message
+            })
+            return
+        }
+        console.log('check');
+        next()
+    } catch (error) {
+        console.log('error from forgot password', error);
+        next(error);
+    }
+}
+exports.verifyEmail = (req, res, next) => {
+    
+    try {
+        const schema = Joi.object({
+            userid: Joi.string().required(),
             code: Joi.number().required(),
         });
         

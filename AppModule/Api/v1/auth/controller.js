@@ -1,14 +1,36 @@
 // const { ErrorHandler } = require("../../helpers/errorHandler");
 const jwt = require("jsonwebtoken");
-const { existingUserByEmail, passwordEncryption, createUser, updatePassword } = require("../../helpers/userHelper");
+const { existingUserByEmail, passwordEncryption, createUser, updatePassword, getUserById } = require("../../helpers/userHelper");
 
 const { sendMail } = require("../../helpers/email.utils");
 const { emailVerificationTemplate } = require("../../helpers/email_verification");
 const { VerifyUserModel } = require("../../models/verificationModel");
+const { UserModel } = require("../../models/users");
 
 
 const AuthController = {
 
+
+  checkUser: async (req, res, next) => {
+    try {
+
+      let result = await UserModel.findById(req.body.id)
+      console.log('user...', result);
+      res.json({
+        status: {
+          code: 200,
+        },
+        data: result,
+        error: null,
+      })
+
+    } catch (error) {
+      console.log('error from ...', error);
+      res.json({
+        error: error
+      })
+    }
+  },
   isexistemail: async (req, res, next) => {
     try {
       const user = await existingUserByEmail(req.body.email);
@@ -120,7 +142,8 @@ const AuthController = {
           password: password,
           isGoogle: req.body.isGoogle,
           isFacebook: req.body.isFacebook,
-          haveAChild: false
+          haveAChild: false,
+          verification: false,
         };
       } else {
         userObject = {
@@ -129,7 +152,8 @@ const AuthController = {
           isGoogle: req.body.isGoogle,
           GoogleId: req.body.GoogleId,
           isFacebook: req.body.isFacebook,
-          haveAChild: false
+          haveAChild: false,
+          verification: false,
         };
       }
       let userResult = await createUser(userObject);
@@ -151,9 +175,36 @@ const AuthController = {
       }
       const jwtToken = jwt.sign(payload, process.env.SECRET_KEY);
       delete userObject?.password;
+
+
+      let randomNumber = Math.floor(100000 + Math.random() * 900000)
+      // return
+
+      let verifyCode = await VerifyUserModel.findOneAndUpdate({ userId: userResult._id }, {
+        userId: userResult._id,
+        email: userResult.email,
+        verificationCode: randomNumber,
+        status: false
+      }, { new: true, upsert: true })
+
+      if (!verifyCode) {
+        res.json({
+          status: 401,
+          error: `something went wrong in generating verification code...`,
+          message: ''
+        })
+        return
+      }
+      await sendMail({
+        from: process.env.EMAIL_USER,
+        to: userResult?.email,
+        subject: "Email Verification",
+        html: emailVerificationTemplate(randomNumber, "Email Verification")
+      })
+
       return res.json({
         status: 201,
-        data: userObject,
+        data: userResult,
         token: jwtToken,
         error: null,
       });
@@ -318,6 +369,7 @@ const AuthController = {
         status: true
       })
       if (verify) {
+
         return res.json({
           status: 200,
           message: 'your code has been verified.',
@@ -338,11 +390,69 @@ const AuthController = {
       })
     }
   },
+  verifyEmail: async (req, res, next) => {
+    try {
+      const { userid, code } = req.body
+      const user = await getUserById(userid)
+
+      if (!user) {
+        res.json({
+          status: 401,
+          error: `This user doesn't exist...`,
+          message: '',
+          verified: false,
+        })
+        return
+      }
+      // if (user.isGoogle !== false && user.isFacebook !== false) {
+      //   res.json({
+      //     status: 401,
+      //     error: `This user as a ${user.isGoogle ? 'Google' : 'Facebook'} user...`,
+      //     message: '',
+      //     verified: false,
+      //   })
+      //   return
+      // }
+
+      // let verify = await VerifyUserModel.findOne({verificationCode: code})
+      let verify = await VerifyUserModel.findOneAndUpdate({ verificationCode: code }, {
+        userId: user._id,
+        email: user.email,
+        verificationCode: code,
+        status: true
+      })
+      if (verify) {
+
+        let updateUser = await UserModel.findByIdAndUpdate(userid, {
+          verification: true,
+        })
+        if (updateUser) {
+          return res.json({
+            status: 200,
+            message: 'your code has been verified.',
+            error: null,
+            verified: true,
+          })
+        }
+      }
+      throw 'Your verification code has been deleted. Please try again.'
+      // if(verify.status === false && verify.verificationCode === 000000){
+      // }
+    } catch (error) {
+      console.log('error...', error);
+      return res.json({
+        status: 401,
+        error: error,
+        message: error,
+        verified: false,
+      })
+    }
+  },
   reCreatePassword: async (req, res, next) => {
     try {
       const { code, password: pass } = req.body
       let verify = await VerifyUserModel.findOne({ verificationCode: code })
-      
+
       if (!verify) {
         return res.json({
           status: 401,
@@ -384,7 +494,7 @@ const AuthController = {
         message: 'your password has been successfully updated...',
         verified: true
       })
-      
+
       // if (user) {
       //   if (user.isGoogle || user.isFacebook) {
       //     console.log('user...........', user);
