@@ -65,9 +65,6 @@ exports.validateEmail = (req, res, next) => {
             return
         }
         // if (error) throw new ErrorHandler(400, error.details[0].message);
-        console.log('req data...........', req.body);
-
-
         next()
     } catch (error) {
         next(error);

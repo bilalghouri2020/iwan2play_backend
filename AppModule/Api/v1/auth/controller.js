@@ -35,6 +35,7 @@ const AuthController = {
     try {
       const user = await existingUserByEmail(req.body.email);
       if (user) {
+        console.log("is existing..", user);
         if (!user.isFacebook && !user.isGoogle) res.json({ loginState: 3, haveAChild: user?.haveAChild || false })
         if (user.isGoogle && !user.isFacebook) res.json({ loginState: 2, googleId: user?.GoogleId || null, haveAChild: user?.haveAChild || false })
         if (!user.isGoogle && user.isFacebook) res.json({ loginState: 1, haveAChild: user?.haveAChild || false })
@@ -43,6 +44,7 @@ const AuthController = {
       return res.json({ loginState: 0, message: 'user not exist...' })
 
       if (user) {
+
         if (user.isGoogle || user.isFacebook) {
           if (user.GoogleId === req.body.GoogleId) {
             console.log('login');
@@ -103,38 +105,62 @@ const AuthController = {
   signup: async (req, res, next) => {
     try {
       const user = await existingUserByEmail(req.body.email);
+      console.log('user exist...', user);
       if (user) {
-        if (user.isGoogle || user.isFacebook) {
-
-          if (user.GoogleId === req.body.GoogleId && !user.isFacebook) {
+        console.log('user exist...0');
+        if (user.isGoogle) {
+          console.log('user exist...1');
+          if (user.GoogleId === req.body.GoogleId) {
+            console.log('user exist...2');
             let payload = {
               _id: user._id,
               email: user.email,
               googleId: user.GoogleId
             }
+            console.log('user exist...3', payload,);
             const jwtToken = jwt.sign(payload, process.env.SECRET_KEY);
-
+            console.log('user exist...4', jwtToken);
             return res.json({
               status: 302,
               loginState: 2,
-              message: `This email is already exists as a ${user.isGoogle ? 'Google User' : 'Facebook User.'}`,
+              message: `This email is already exists as a Google User.`,
               data: user,
               token: jwtToken
             })
+          } else {
+            return res.json({
+              status: 302,
+              loginState: 2,
+              message: `This email is already exists as a Google User.`,
+            })
+            console.log('facebook service is not available ');
           }
+
+        } else if (user.isFacebook) {
+          return res.json({
+            status: 302,
+            loginState: 2,
+            message: `This email is already exists as a Facebook User.`,
+            data: user,
+            token: jwtToken
+          })
         } else {
+          console.log('user exist...6');
           return res.json({
             status: 302,
             loginState: 3,
             message: 'This email already exists.'
           })
         }
+        console.log('user exist...7');
         // throw new ErrorHandler(400, "This email already exists.");
       }
+      console.log('user exist...8');
 
       let password
       let userObject
       if (!req.body.isGoogle && !req.body.isFacebook) {
+        console.log('user exist...9');
         password = passwordEncryption(req.body.password);
         userObject = {
           fullName: req.body.fullName,
@@ -146,6 +172,7 @@ const AuthController = {
           verification: false,
         };
       } else {
+        console.log('user exist...10');
         userObject = {
           fullName: req.body.fullName,
           email: req.body.email,
@@ -157,6 +184,7 @@ const AuthController = {
         };
       }
       let userResult = await createUser(userObject);
+      console.log('user exist...11');
 
       let payload;
       if (!userResult.isFacebook && !userResult.isGoogle) {

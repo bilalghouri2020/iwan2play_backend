@@ -25,6 +25,7 @@ exports.updatePassword = async (id, password) => {
 exports.existingUserByEmail = async (email) => {
   try {
     const user = await UserModel.findOne({ email: email }).lean().select("+password").exec();
+    console.log('users...', user);
     return user;
   } catch (error) {
     return null;
