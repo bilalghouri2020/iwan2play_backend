@@ -19,6 +19,7 @@ io.on('connection', socket => {
             }
         }])
         result = result?.filter(item => item?._id?.toString() !== userID)
+        console.log('all users...', result);
         socket.emit('recieve_all_user', result)
     })
 })

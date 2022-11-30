@@ -29,6 +29,7 @@ exports.getAllUserFromLocation = async (lat, lng) => {
 
     ])
 
+    console.log('users...', users.length);
     // const users = await ActivatedUser.geoNear({ type: 'Point', coordinates: [parseFloat(lng), parseFloat(lat)] }, { maxDistance: 100000, spherical: true })
     
     return users
