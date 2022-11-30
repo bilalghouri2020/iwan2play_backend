@@ -18,8 +18,8 @@ exports.validateForActivation = (req, res, next) => {
   const {userData} = req.body
   try {
     const schema = Joi.object({
-      lat: Joi.string().required(),
-      lng: Joi.string().required(),
+      lat: Joi.string(),
+      lng: Joi.string(),
     });
     const userDataResult = schema.validate(userData);
     const { error } = userDataResult

@@ -7,9 +7,15 @@ const { UserModel } = require("../models/users");
 
 let users = []
 io.on('connection', socket => {
-    console.log(socket.id);
+    users.push({
+        sockedID: socket.id,
+    })  
+    console.log('existing users...', users);
+    socket.on('disconnect', () => {
+        users = users.filter(item => item.sockedID !== socket.id)
+        console.log('remaining users...', users);
+    })
     socket.on('ready_for_chat', async (userID) => {
-        console.log("user..id", userID);
         let result = await UserModel.aggregate([{
             $lookup: {
                 from: 'kidsinfos',
@@ -19,7 +25,6 @@ io.on('connection', socket => {
             }
         }])
         result = result?.filter(item => item?._id?.toString() !== userID)
-        console.log('all users...', result);
-        socket.emit('recieve_all_user', result)
+        socket.emit('recieve_all_user', result, users)
     })
 })
