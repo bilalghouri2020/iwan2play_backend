@@ -14,7 +14,9 @@ const activationController = {
     console.log("req.params...", req.body.userId.toString());
     try {
       let record = await getAllUserFromLocation(req.query.lat, req.query.lng)
-      record = record.filter(item => item.userId.toString() !== req.body.userId.toString())
+      if(record?.length){
+        record = record.filter(item => item.userId.toString() !== req.body.userId.toString())
+      }
       // console.log("get all record...", record);
       // return 
       return res.json({
