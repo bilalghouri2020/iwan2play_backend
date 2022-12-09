@@ -20,7 +20,7 @@ const {
 
 
 var app = express();
-const server = require('http').createServer(app)
+// const server = require('http').createServer(app)
 // const { Server } = require('socket.io')
 // const io = new Server(server)
 
@@ -120,7 +120,7 @@ app.use(function (err, req, res, next) {
 
 const PORT = process.env.PORT || 3000
 
-server.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log('server is running on port ...', PORT);
 })
 
