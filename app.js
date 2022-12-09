@@ -67,13 +67,12 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(upload.any())
 
-// app.get('/checkrouter', (req, res) => {
-//   console.log("connection successful");
-//   res.json({
-//     message: 'ok connection'
-//   })
-// })
-
+app.get('/checkrouter', (req, res) => {
+  console.log("connection successful");
+  res.json({
+    message: 'ok connection'
+  })
+})
 app.use(openRoutes);
 app.use(
   // upload.any(),
@@ -84,11 +83,6 @@ app.use(
 
 
 
-app.get('/', (req, res) => {
-  res.json({
-    message: 'connection ok'
-  })
-})
 // app.use('/' () => {
 
 // });
@@ -124,4 +118,5 @@ module.exports = app
 // app.listen(PORT, () => {
 //   console.log('server is running on port ...', PORT);
 // })
+
 
