@@ -21,12 +21,12 @@ const {
 
 var app = express();
 const server = require('http').createServer(app)
-const { Server } = require('socket.io')
-const io = new Server(server)
+// const { Server } = require('socket.io')
+// const io = new Server(server)
 
-module.exports = { io }
+// module.exports = { io }
 
-require('./AppModule/Api/helpers/sockets')
+// require('./AppModule/Api/helpers/sockets')
 
 
 // io.on('connection', (socket) => {
