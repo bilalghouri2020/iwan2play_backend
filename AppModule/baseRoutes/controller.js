@@ -102,14 +102,11 @@ const closeRoutesController = {
         //   })
         //   return
         // }
-
         // if(authenticationType === )
-
       }
       console.log('something went wrong from varifyUser middleware...');
       res.json({ error: 'something went wrong from varifyUser middleware...' })
       return
-
     } catch (error) {
       res.json({ error })
       // next(error);
