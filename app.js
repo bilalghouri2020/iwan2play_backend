@@ -68,7 +68,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(upload.any())
 
 app.get('/checkrouter', (req, res) => {
-  console.log("connection successful");
+  console.log("connection successful as;lkdhflasdhfjkashdf");
   res.json({
     message: 'ok connection'
   })
