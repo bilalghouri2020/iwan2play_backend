@@ -20,30 +20,34 @@ const {
 
 
 var app = express();
-// const server = require('http').createServer(app)
-// const { Server } = require('socket.io')
-// const io = new Server(server)
-
-// module.exports = { io }
+const server = require('http').createServer(app)
+const { Server } = require('socket.io')
+const io = new Server(server, {
+  pingTimeout: 40000, serveClient: true, allowRequest: (req, callback) => {
+    callback(null, true)
+  }
+})
+module.exports = { io }
+require('./AppModule/Api/helpers/sockets')
 
 // require('./AppModule/Api/helpers/sockets')
 
 
 // io.on('connection', (socket) => {
 //   console.log('a user connected...',socket.rooms.entries());
-//   socket.on('disconnect', () => {
-//     console.log('disconnect user...');
-//   })
-//   socket.on('ready_for_chat', (data) => {
-//     io.emit('ready_for_chat_recieve', 'hello world')
-//   })
-//   io.on('disconnect', () => {
-//     console.log('disconnect user...');
-//   })
-//   // socket.emit('enteredvalue', 'adsfjhakdlsf')
+// socket.on('disconnect', () => {
+//   console.log('disconnect user...');
+// })
+// socket.on('ready_for_chat', (data) => {
+//   io.emit('ready_for_chat_recieve', 'hello world')
+// })
+// io.on('disconnect', () => {
+//   console.log('disconnect user...');
+// })
+// socket.emit('enteredvalue', 'adsfjhakdlsf')
 // })
 
-// io.on
+// io.onx
 
 // view engine setup
 // app.set('views', path.join(__dirname, 'views'));
@@ -112,7 +116,7 @@ app.use(function (err, req, res, next) {
 });
 
 
-module.exports = app
+module.exports = { app, server }
 // const PORT = process.env.PORT || 3000
 
 // app.listen(PORT, () => {
